@@ -62,7 +62,7 @@ namespace _11_o5_0._2
 
             //    }
 
-
+            List<string> my_list = new List<string>();
 
 
         }
