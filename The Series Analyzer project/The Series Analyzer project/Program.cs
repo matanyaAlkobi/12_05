@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
@@ -9,10 +11,14 @@ namespace The_Series_Analyzer_project
 {
     internal class Program
     {
-        static int Menu()
+        /*Function to open a menu*/
+        static int GetMenuSelection()
         {
-            Console.WriteLine(
- @"                         ===== MAIN MENU =====
+            int choose = 0;
+            do
+            {
+                Console.WriteLine(
+     @"                         ===== MAIN MENU =====
 
                 Please choose an option from the menu below:
 
@@ -28,10 +34,27 @@ namespace The_Series_Analyzer_project
                 10. Exit the program.
 
                 Enter your choice (1-10): ");
-            int choose = int.Parse(Console.ReadLine());
+
+                string num = Console.ReadLine();
+                bool chack = TryToConvertASingleNumber(num, out choose);
+                if (!chack || choose < 1 || choose > 10)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("WARNING: Input error, please re-enter according to the item's requirements.");
+                    Console.ResetColor();
+                }
+            }
+            while (choose < 1 || choose > 10 );
             return choose;
         }
 
+        /*Converts a single number from a string to a number*/
+        static bool TryToConvertASingleNumber(string val, out int chack)
+        {   
+            return int.TryParse(val, out chack);
+        }
+
+        /*Checks whether the list is empty.*/
         static bool IsEmpty(List<int> SeriesLList)
         {
             if (SeriesLList.Count == 0)
@@ -43,70 +66,108 @@ namespace The_Series_Analyzer_project
                 return false;
             }
         }
-        static List<int> NewSeries(int[] series, List<int> SeriesLList)
+
+
+        //static List<int> CreatesANewSeries(int[] series, List<int> SeriesList)
+        //{
+        //    SeriesList.Clear();
+        //    SeriesList.AddRange(series);
+        //    return SeriesList;
+        //}
+
+
+        /*A function that creates a new series*/
+        static List<int> CreatesANewSeries(List<int>   SeriesList)
         {
-            SeriesLList.Clear();
-            SeriesLList.AddRange(series);
-            return SeriesLList;
+            bool run;
+            SeriesList.Clear(); //Clears the list
+                    do
+            {
+                Console.WriteLine("enter a series");
+                string StrSeries = Console.ReadLine();
+                        run = SplitTheSeries(StrSeries, SeriesList); //  Inputs a string and returns me a list
+                    }
+            while (SeriesList.Count < 3 || !run);
+            return SeriesList;   
         }
 
-        static void PrintList(List<int> SeriesLList)
+        //  Splits the string into elements
+        static bool SplitTheSeries(String StrSeries, List<int> SeriesList)
         {
-            foreach (int num in SeriesLList)
+            String[] MyArray = StrSeries.Split(' ');
+            foreach (string val in MyArray)
+            {
+                if (TryToConvertASingleNumber(val, out int num))
+                {
+                    int NewNum = ConvertStringToInt(val);
+                    SeriesList.Add(NewNum);
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+            return true;
+        }
+
+
+        static int ConvertStringToInt(string value)
+        {
+            return int.Parse(value);
+        }
+
+        static void PrintTheList(List<int> SeriesList)
+        {
+            foreach (int num in SeriesList)
             {
                 Console.WriteLine(num);
             }
         }
 
-        static void DisplayAsInserted(List<int> SeriesLList)
+        static void DisplaysInTheOrderEntered(List<int> SeriesList)
         {
-            if (IsEmpty(SeriesLList))
+            if (IsEmpty(SeriesList))
             {
                 Console.WriteLine("the list is  empty");
             }
             else
             {
-                PrintList(SeriesLList);
+                PrintTheList(SeriesList);
             }
-        }
-        static List<int> ShowsAReverseSeries(List<int> SeriesLList)
-        {
-            if (IsEmpty(SeriesLList))
-            {
-                return null;
-            }
-            SeriesLList.Reverse();
-            return SeriesLList;
         }
 
-        static void ShoesReversSeries(List<int> SeriesLList)
+        // Displays the list in reverse from the entry.
+        static void DisplayReversedSeries(List<int> SeriesList)
         {
-            if (IsEmpty(SeriesLList))
+            if (IsEmpty(SeriesList))
             {
                 return;
             }
-            SeriesLList.Reverse();
-            PrintList(SeriesLList);
-
+            SeriesList.Reverse();
+            PrintTheList(SeriesList);
         }
-        static void SortedDisplay(List<int> SeriesLList)
+
+        //Displays the list in sorted order.
+        static void DisplaySortedSeries(List<int> SeriesList)
         {
-            if (IsEmpty(SeriesLList))
+            if (IsEmpty(SeriesList))
             {
                 return;
             }
-            SeriesLList.Sort();
-            PrintList(SeriesLList);
+            SeriesList.Sort();
+            PrintTheList(SeriesList);
         }
 
-        static void MaxDisplay(List<int> SeriesLList)
+
+        static void DisplayMaxValue(List<int> SeriesList)
         {
-            if (IsEmpty(SeriesLList))
+            if (IsEmpty(SeriesList))
             {
                 return;
             }
             int maxi = 0;
-            foreach (int num in SeriesLList)
+            foreach (int num in SeriesList)
             {
                 if (num > maxi)
                 {
@@ -115,14 +176,14 @@ namespace The_Series_Analyzer_project
             }
             Console.WriteLine(maxi);
         }
-        static void MinDisplay(List<int> SeriesLList)
+        static void DisplayMinValue(List<int> SeriesList)
         {
-            if (IsEmpty(SeriesLList))
+            if (IsEmpty(SeriesList))
             {
                 return;
             }
-            int mini = SeriesLList[0];
-            foreach (int num in SeriesLList)
+            int mini = SeriesList[0];
+            foreach (int num in SeriesList)
             {
                 if (mini > num)
                 {
@@ -132,96 +193,120 @@ namespace The_Series_Analyzer_project
             Console.WriteLine(mini);
         }
 
-        static double AvgDisplay(List<int> SeriesLList)
+        static double GetSeriesAverage(List<int> SeriesList)
         {
-            if (IsEmpty(SeriesLList))
+            if (IsEmpty(SeriesList))
             {
                 return 0;
             }
-            Double Avg = SumOfASeries(SeriesLList) / LenghOfASeries(SeriesLList);
+            Double Avg = SumOfASeries(SeriesList) / LenghOfASeries(SeriesList);
             return Avg;
         }
-        static int LenghOfASeries(List<int> SeriesLList)
+        static int LenghOfASeries(List<int> SeriesList)
         {
-            if(IsEmpty(SeriesLList))
+            if(IsEmpty(SeriesList))
                 { return 0; }
 
-            int lengh = SeriesLList.Count;
+            int lengh = SeriesList.Count;
             return lengh;
         }
-        static int SumOfASeries(List<int> SeriesLList)
+        static int SumOfASeries(List<int> SeriesList)
         {
-            if (IsEmpty(SeriesLList))
+            if (IsEmpty(SeriesList))
                 {
                 return 0;
             }
             int sumi = 0;
-            foreach (int num in SeriesLList)
+            foreach (int num in SeriesList)
             {
                 sumi += num;
             }
-            return sumi;
+            return sumi ;
         }
 
-        static void maneger(int num, int[] series, List<int> SeriesList)
+        static void ProcessMenuSelection(int num, List<int> SeriesList)
         {
             switch (num)
             {
                 case 1:
-                    NewSeries(series, SeriesList);
+                    CreatesANewSeries(SeriesList);
+                    PrintTheList(SeriesList);
                     break;
                 case 2:
-                    DisplayAsInserted(SeriesList);
+                    DisplaysInTheOrderEntered(SeriesList);
                     break;
                 case 3:
-                    ShoesReversSeries(SeriesList);
+                    DisplayReversedSeries(SeriesList);
                     break;
                 case 4:
-                    SortedDisplay(SeriesList);
+                    DisplaySortedSeries(SeriesList);
                     break;
                 case 5:
-                    MaxDisplay(SeriesList);
+                    DisplayMaxValue(SeriesList);
                     break;
                 case 6:
-                    MinDisplay(SeriesList);
+                    DisplayMinValue(SeriesList);
                     break;
                 case 7:
-                    AvgDisplay(SeriesList);
+                    Console.WriteLine( GetSeriesAverage(SeriesList));
                     break;
                 case 8:
-                    LenghOfASeries(SeriesList);
+                    Console.WriteLine( LenghOfASeries(SeriesList));
                     break;
                 case 9:
-                    SumOfASeries(SeriesList);
+                    Console.WriteLine(SumOfASeries(SeriesList));
                     break;  
             }
         }
 
-            static void Main(string[] args)
+        static List<int> ConvertingFromAnArrayToAList(object[] array,List<int> SeriesList)
+        {
+            string result = string.Join(" ", array);
+            SplitTheSeries(result, SeriesList);
+            return SeriesList;
+        }
+
+        static  bool ChackTheLengh(List<int> SeriesList)
+        {
+            if (SeriesList.Count < 3)
             {
-                int[] array = { 1, 5, 3, 2, 0 };
-                List<int> SeriesLList = new List<int>();
+                return true;
+            }
+            return false;
+        }
+        static void Main(string[] args)
+        {
+            int choose = 0;
+            List<int> SeriesList = new List<int>();
 
-            if (args.Length > 0)
+            if (args.Length > 3)
+
             {
-
-                foreach (string arg in args)
-                {
-
-                    SeriesLList.Add(arg);
-                }
-                //int choose1 = Menu();
-
-
-
+                List  <int> newList = new List<int>();
+                int choose1 = GetMenuSelection();
+                newList = ConvertingFromAnArrayToAList(args, SeriesList);
+                ProcessMenuSelection(choose1, newList);
             }
 
-                //int choose = Menu();
-
+            do
+            {
+                choose = GetMenuSelection();
+                ProcessMenuSelection(choose, SeriesList);
             }
+            while (choose != 10);
 
         }
+
+
+
+
+
+
+
     }
+}
+
+
 
 
 
