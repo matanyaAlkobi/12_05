@@ -12,7 +12,7 @@ namespace The_Series_Analyzer_project
         static int Menu()
         {
             Console.WriteLine(
-                @"===== MAIN MENU =====
+ @"                         ===== MAIN MENU =====
 
                 Please choose an option from the menu below:
 
@@ -28,13 +28,10 @@ namespace The_Series_Analyzer_project
                 10. Exit the program.
 
                 Enter your choice (1-10): ");
-            int choose  = int.Parse(Console.ReadLine());
+            int choose = int.Parse(Console.ReadLine());
             return choose;
         }
-        static void maneger(int num)
-        {
 
-        }
         static bool IsEmpty(List<int> SeriesLList)
         {
             if (SeriesLList.Count == 0)
@@ -92,7 +89,6 @@ namespace The_Series_Analyzer_project
             PrintList(SeriesLList);
 
         }
-
         static void SortedDisplay(List<int> SeriesLList)
         {
             if (IsEmpty(SeriesLList))
@@ -136,17 +132,96 @@ namespace The_Series_Analyzer_project
             Console.WriteLine(mini);
         }
 
-        static void Main(string[] args)
+        static double AvgDisplay(List<int> SeriesLList)
         {
-            int[] array = { 1, 5, 3, 2, 0 };
-            List<int> SeriesLList = new List<int>();
+            if (IsEmpty(SeriesLList))
+            {
+                return 0;
+            }
+            Double Avg = SumOfASeries(SeriesLList) / LenghOfASeries(SeriesLList);
+            return Avg;
+        }
+        static int LenghOfASeries(List<int> SeriesLList)
+        {
+            if(IsEmpty(SeriesLList))
+                { return 0; }
 
-            int choose = Menu();
-
-
-
+            int lengh = SeriesLList.Count;
+            return lengh;
+        }
+        static int SumOfASeries(List<int> SeriesLList)
+        {
+            if (IsEmpty(SeriesLList))
+                {
+                return 0;
+            }
+            int sumi = 0;
+            foreach (int num in SeriesLList)
+            {
+                sumi += num;
+            }
+            return sumi;
         }
 
+        static void maneger(int num, int[] series, List<int> SeriesList)
+        {
+            switch (num)
+            {
+                case 1:
+                    NewSeries(series, SeriesList);
+                    break;
+                case 2:
+                    DisplayAsInserted(SeriesList);
+                    break;
+                case 3:
+                    ShoesReversSeries(SeriesList);
+                    break;
+                case 4:
+                    SortedDisplay(SeriesList);
+                    break;
+                case 5:
+                    MaxDisplay(SeriesList);
+                    break;
+                case 6:
+                    MinDisplay(SeriesList);
+                    break;
+                case 7:
+                    AvgDisplay(SeriesList);
+                    break;
+                case 8:
+                    LenghOfASeries(SeriesList);
+                    break;
+                case 9:
+                    SumOfASeries(SeriesList);
+                    break;  
+            }
+        }
+
+            static void Main(string[] args)
+            {
+                int[] array = { 1, 5, 3, 2, 0 };
+                List<int> SeriesLList = new List<int>();
+
+            if (args.Length > 0)
+            {
+
+                foreach (string arg in args)
+                {
+
+                    SeriesLList.Add(arg);
+                }
+                //int choose1 = Menu();
+
+
+
+            }
+
+                //int choose = Menu();
+
+            }
+
+        }
     }
-}
+
+
 
